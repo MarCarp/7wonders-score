@@ -56,33 +56,35 @@ Catégories ajoutées par les extensions :
 
 ```bash
 npm install
+```
 
-Lancement en développement
-
+## Lancement en développement
 ```bash
 npm run dev
-
-Build
+```
+## Build
 ```bash
 npm run build
+```
 
-Modèle de données
+## Modèle de données
 
 Le projet distingue plusieurs entités principales :
 
-Player : joueur global avec un identifiant stable
-Game : partie jouée
-GamePlayer : participation d’un joueur à une partie
-ScoreEntry : score d’un joueur pour une catégorie donnée
-ScoreCategory : catégorie de score disponible
+- Player : joueur global avec un identifiant stable
+- Game : partie jouée
+- GamePlayer : participation d’un joueur à une partie
+- ScoreEntry : score d’un joueur pour une catégorie donnée
+- ScoreCategory : catégorie de score disponible
 
 Cette structure permet de conserver les scores détaillés et de calculer plus tard des statistiques comme :
 
-nombre de victoires par joueur
-score moyen par joueur
-performance par couleur
-impact des extensions
-styles de victoire
-Statut
+- nombre de victoires par joueur
+- score moyen par joueur
+- performance par couleur
+- impact des extensions
+- styles de victoire
+
+## Statut
 
 Projet en cours de conception / développement.
