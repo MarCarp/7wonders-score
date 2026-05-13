@@ -1,37 +1,41 @@
-.app {
-  width: min(100% - 32px, 720px);
-  margin: 0 auto;
-  padding: 32px 0;
+.helper-text {
+  color: #555;
 }
 
-.extension-list {
+.warning-text {
+  color: #a15c00;
+  font-weight: 600;
+}
+
+.player-list {
   display: grid;
   gap: 12px;
   margin-bottom: 32px;
 }
 
-.extension-item {
+.player-item {
   display: flex;
   gap: 8px;
   align-items: center;
-}
-
-.score-category-list {
-  display: grid;
-  gap: 8px;
-  padding: 0;
-  list-style: none;
-}
-
-.score-category-list li {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
   padding: 12px;
   border: 1px solid #ddd;
   border-radius: 8px;
 }
 
-.score-category-list span {
-  color: #666;
+.player-item.is-selected {
+  border-color: #111;
+  background: #f3f3f3;
+}
+
+button {
+  padding: 12px 16px;
+  border: 0;
+  border-radius: 8px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
