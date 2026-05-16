@@ -3,9 +3,15 @@ import "./App.css";
 
 import { ExtensionSelector } from "./components/ExtensionSelector";
 import { PlayerSelector } from "./components/PlayerSelector";
-import { scoreCategories, getActiveScoreCategories } from "./data/scoreCategories";
+import { ScoreTable } from "./components/ScoreTable";
 import { players } from "./data/players";
+import {
+  getActiveScoreCategories,
+  scoreCategories,
+} from "./data/scoreCategories";
 import type { ExtensionId } from "./types/game";
+import type { ScoreDraft } from "./types/score";
+import { calculatePlayerScoreResults } from "./utils/calculateScores";
 
 const defaultEnabledExtensions: Record<ExtensionId, boolean> = {
   armada: false,
@@ -20,6 +26,8 @@ function App() {
   );
 
   const [selectedPlayerIds, setSelectedPlayerIds] = useState<string[]>([]);
+  const [isScoreSheetVisible, setIsScoreSheetVisible] = useState(false);
+  const [scoreDraft, setScoreDraft] = useState<ScoreDraft>({});
 
   const activeScoreCategories = useMemo(() => {
     return getActiveScoreCategories(enabledExtensions);
@@ -29,7 +37,16 @@ function App() {
     return players.filter((player) => selectedPlayerIds.includes(player.id));
   }, [selectedPlayerIds]);
 
-  const canStartGame = selectedPlayerIds.length >= 3 && selectedPlayerIds.length <= 7;
+  const scoreResults = useMemo(() => {
+    return calculatePlayerScoreResults(
+      selectedPlayers,
+      activeScoreCategories,
+      scoreDraft
+    );
+  }, [selectedPlayers, activeScoreCategories, scoreDraft]);
+
+  const canStartGame =
+    selectedPlayerIds.length >= 3 && selectedPlayerIds.length <= 7;
 
   function handleToggleExtension(extensionId: ExtensionId) {
     setEnabledExtensions((currentEnabledExtensions) => ({
@@ -52,6 +69,24 @@ function App() {
 
       return [...currentSelectedPlayerIds, playerId];
     });
+  }
+
+  function handleScoreChange(
+    playerId: string,
+    categoryId: keyof ScoreDraft[string],
+    value: string
+  ) {
+    setScoreDraft((currentScoreDraft) => ({
+      ...currentScoreDraft,
+      [playerId]: {
+        ...currentScoreDraft[playerId],
+        [categoryId]: value,
+      },
+    }));
+  }
+
+  function getPlayerName(playerId: string): string {
+    return players.find((player) => player.id === playerId)?.name ?? "Joueur";
   }
 
   return (
@@ -81,10 +116,47 @@ function App() {
           {scoreCategories.length}
         </p>
 
-        <button type="button" disabled={!canStartGame}>
+        <button
+          type="button"
+          disabled={!canStartGame}
+          onClick={() => setIsScoreSheetVisible(true)}
+        >
           Créer la feuille de score
         </button>
       </section>
+
+      {isScoreSheetVisible && (
+        <>
+          <ScoreTable
+            players={selectedPlayers}
+            categories={activeScoreCategories}
+            scoreDraft={scoreDraft}
+            onScoreChange={handleScoreChange}
+          />
+
+          <section>
+            <h2>Classement actuel</h2>
+
+            <ol className="ranking-list">
+              {scoreResults.map((result) => (
+                <li
+                  key={result.playerId}
+                  className={result.isLeader ? "is-leader" : ""}
+                >
+                  <span>
+                    #{result.rank} {getPlayerName(result.playerId)}
+                  </span>
+
+                  <strong>
+                    {result.totalScore} pts
+                    {result.coinScore > 0 ? ` · monnaie ${result.coinScore}` : ""}
+                  </strong>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </>
+      )}
 
       <section>
         <h2>Catégories de score actives</h2>

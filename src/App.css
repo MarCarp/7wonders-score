@@ -39,3 +39,57 @@ button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
 }
+
+.score-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-bottom: 32px;
+}
+
+.score-table {
+  width: 100%;
+  min-width: 640px;
+  border-collapse: collapse;
+}
+
+.score-table th,
+.score-table td {
+  padding: 8px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.score-table th:first-child {
+  text-align: left;
+}
+
+.score-table input {
+  width: 72px;
+  padding: 8px;
+  text-align: center;
+}
+
+.score-table tfoot {
+  background: #f3f3f3;
+}
+
+.ranking-list {
+  display: grid;
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.ranking-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.ranking-list li.is-leader {
+  border-color: #111;
+  background: #f3f3f3;
+}

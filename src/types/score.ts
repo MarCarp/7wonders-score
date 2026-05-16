@@ -30,3 +30,8 @@ export type ScoreEntry = {
   categoryId: ScoreCategoryId;
   value: number;
 };
+
+export type ScoreDraft = Record<
+  string,
+  Partial<Record<ScoreCategoryId, string>>
+>;
