@@ -1,6 +1,12 @@
 import { useMemo, useState } from "react";
 import "./App.css";
 
+import {
+  createCompletedGameSnapshot,
+  type CompletedGameSnapshot,
+} from "./utils/createCompletedGameSnapshot";
+
+
 import { ExtensionSelector } from "./components/ExtensionSelector";
 import { PlayerSelector } from "./components/PlayerSelector";
 import { ScoreTable } from "./components/ScoreTable";
@@ -10,7 +16,7 @@ import {
   scoreCategories,
 } from "./data/scoreCategories";
 import type { ExtensionId } from "./types/game";
-import type { ScoreDraft } from "./types/score";
+import type { ScoreCategoryId, ScoreDraft } from "./types/score";
 import { calculatePlayerScoreResults } from "./utils/calculateScores";
 
 const defaultEnabledExtensions: Record<ExtensionId, boolean> = {
@@ -21,6 +27,9 @@ const defaultEnabledExtensions: Record<ExtensionId, boolean> = {
 };
 
 function App() {
+  const [completedSnapshot, setCompletedSnapshot] =
+  useState<CompletedGameSnapshot | null>(null);
+
   const [enabledExtensions, setEnabledExtensions] = useState(
     defaultEnabledExtensions
   );
@@ -48,6 +57,18 @@ function App() {
   const canStartGame =
     selectedPlayerIds.length >= 3 && selectedPlayerIds.length <= 7;
 
+
+    function handleCompleteGame() {
+  const snapshot = createCompletedGameSnapshot({
+    players: selectedPlayers,
+    categories: activeScoreCategories,
+    scoreDraft,
+    enabledExtensions,
+  });
+
+  setCompletedSnapshot(snapshot);
+}
+
   function handleToggleExtension(extensionId: ExtensionId) {
     setEnabledExtensions((currentEnabledExtensions) => ({
       ...currentEnabledExtensions,
@@ -73,9 +94,11 @@ function App() {
 
   function handleScoreChange(
     playerId: string,
-    categoryId: keyof ScoreDraft[string],
+    categoryId: ScoreCategoryId,
     value: string
   ) {
+    setCompletedSnapshot(null);
+
     setScoreDraft((currentScoreDraft) => ({
       ...currentScoreDraft,
       [playerId]: {
@@ -170,6 +193,52 @@ function App() {
           ))}
         </ul>
       </section>
+
+      <section>
+  <h2>Fin de partie</h2>
+
+  <button type="button" onClick={handleCompleteGame}>
+    Terminer la partie
+  </button>
+
+  {completedSnapshot && (
+    <div className="completed-game-summary">
+      <h3>Partie finalisée</h3>
+
+      <p>
+        Gagnant :{" "}
+        <strong>
+          {completedSnapshot.game.winnerPlayerId
+            ? getPlayerName(completedSnapshot.game.winnerPlayerId)
+            : "Égalité parfaite"}
+        </strong>
+      </p>
+
+      <p>
+        Joueurs enregistrés :{" "}
+        <strong>{completedSnapshot.gamePlayers.length}</strong>
+      </p>
+
+      <p>
+        Scores enregistrés :{" "}
+        <strong>{completedSnapshot.scoreEntries.length}</strong>
+      </p>
+
+      <p>
+        Départage par monnaie :{" "}
+        <strong>
+          {completedSnapshot.game.tieBreakerUsed ? "oui" : "non"}
+        </strong>
+      </p>
+
+      <details>
+        <summary>Voir la donnée générée</summary>
+
+        <pre>{JSON.stringify(completedSnapshot, null, 2)}</pre>
+      </details>
+    </div>
+  )}
+</section>
     </main>
   );
 }
